@@ -1,13 +1,17 @@
-const express = require('express');
+import 'dotenv/config';
+import express from 'express';
+import http from 'http';
+import { Server } from 'socket.io';
+import socketController from './controllers/socketController.js';
+
 const app = express();
-const PORT = process.env.PORT || 3000;
+const server = http.createServer(app);
+const io = new Server(server);
 
-app.use(express.json());
+app.use(express.static('public'));
 
-app.get('/', (req, res) => {
-    res.send('Servidor funcionando 🚀');
-});
+io.on('connection', (socket) => socketController(socket, io));
 
-app.listen(PORT, () => {
-    console.log(`Servidor escuchando en http://localhost:${PORT}`);
+server.listen(process.env.PORT || 3000, () => {
+    console.log(`Servidor en puerto ${process.env.PORT || 3000}`);
 });
